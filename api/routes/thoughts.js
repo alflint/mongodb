@@ -34,27 +34,27 @@ router.get('/:id', async (req, res) => {
 // POST a new thought
 router.post('/', async (req, res) => {
     try {
-      const { username, thoughtText } = req.body;
+        const { username, thoughtText } = req.body;
 
-      const user = await User.findOne({ username });
+        const user = await User.findOne({ username });
 
-      if (!user) {
-        res.status(404).json({ message: 'User not found!' });
-        return;
-      }
+        if (!user) {
+            res.status(404).json({ message: 'User not found!' });
+            return;
+        }
 
-      const thought = new Thought({ username, thoughtText });
-      await thought.save();
+        const thought = new Thought({ username, thoughtText });
+        await thought.save();
 
-      user.thoughts.push(thought);
-      await user.save();
+        user.thoughts.push(thought);
+        await user.save();
 
-      res.status(201).json(thought);
+        res.status(201).json(thought);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server error' });
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
     }
-  });
+});
 
 // PUT to update a thought by ID
 router.put('/:id', async (req, res) => {
@@ -74,28 +74,22 @@ router.put('/:id', async (req, res) => {
 // DELETE a thought by ID
 router.delete('/:id', async (req, res) => {
     try {
-      const thought = await Thought.findById(req.params.id);
-      if (!thought) {
-        return res.status(404).json({ message: 'Thought not found!' });
-      }
-
-      const username = thought.username;
-      const user = await User.findOne({ username });
-      if (!user) {
-        return res.status(404).json({ message: 'User not found!' });
-      }
-
-      user.thoughts.pull(thought);
-      await user.save();
-
-      await thought.remove();
-
-      res.json({ message: 'Thought deleted' });
+        const deletedThought = await Thought.findByIdAndDelete(req.params.id);
+        console.log(deletedThought);
+        if (!deletedThought) {
+            return res.status(404).json({ message: 'Thought not found' });
+        }
+        const updatedUser = await User.findOneAndUpdate(
+            { username: deletedThought.username },
+            { $pull: { thoughts: deletedThought._id } },
+            { new: true }
+        );
+        res.json({ message: 'Thought deleted', deletedThought, updatedUser });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Server error' });
+        console.error(err);
+        res.status(500).json({ message: 'Failed to delete thought' });
     }
-  });
+});
 
 // POST a reaction to a thought
 router.post('/:id/reactions', async (req, res) => {
@@ -125,7 +119,7 @@ router.delete('/:id/reactions/:reactionId', async (req, res) => {
         // Find the index of the reaction with the specified reactionId
         const reactionIndex = thought.reactions.findIndex(
             (reaction) => reaction._id.equals(new mongoose.Types.ObjectId(req.params.reactionId))
-          );
+        );
 
         // If the reaction doesn't exist, return a 404 status code
         if (reactionIndex === -1) {
