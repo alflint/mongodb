@@ -74,21 +74,6 @@ router.put('/:id', async (req, res) => {
 // DELETE a thought by ID
 router.delete('/:id', async (req, res) => {
     try {
-        const thought = await Thought.findByIdAndDelete(req.params.id);
-        if (!thought) {
-            res.status(404).json({ message: 'Thought not found!' });
-            return;
-        }
-        await User.findByIdAndUpdate(thought.username, { $pull: { thoughts: thought._id } });
-        res.json(thought);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json(err);
-    }
-});
-
-router.delete('/:id', async (req, res) => {
-    try {
       const thought = await Thought.findById(req.params.id);
       if (!thought) {
         return res.status(404).json({ message: 'Thought not found!' });
