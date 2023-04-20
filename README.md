@@ -4,6 +4,8 @@
 
 This repository contains a basic demo of using MongoDB with Node.js and Express. It includes routes for creating, reading, updating, and deleting users and their thoughts.
 
+[Video Walkthrough](https://drive.google.com/file/d/1BA97FnZr350AQE8nTjVLfJHb_WDGNtJ_/view?usp=sharing)
+
 
 <hr>
 
