@@ -32,7 +32,7 @@ npm install
 Next, create a `.env` file in the root directory of the project and add your MongoDB connection string:
 
 ```
-MONGODB_URI=<your-mongodb-uri>
+MONGODB_CONN_STR=<your-mongodb-connection-string>
 ```
 
 
